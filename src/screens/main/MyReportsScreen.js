@@ -12,7 +12,8 @@ import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 
 const MyReportsScreen = ({ navigation }) => {
-  const [selectedFilter, setSelectedFilter] = useState('All Issues');
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('All Issues');
+  const [selectedStatusFilter, setSelectedStatusFilter] = useState(null); // New state for status filtering
 
   // Mock data - replace with real data from your backend
   const reports = [
@@ -108,19 +109,45 @@ const MyReportsScreen = ({ navigation }) => {
   };
 
   const getFilteredReports = () => {
-    if (selectedFilter === 'All Issues') return reports;
-    
-    const statusMap = {
-      'Pending': 'Pending',
-      'In Progress': 'In-Progress',
-      'Completed': 'Completed'
-    };
-    
-    return reports.filter(report => report.status === statusMap[selectedFilter]);
+    let filteredReports = reports;
+
+    // Filter by category first
+    if (selectedCategoryFilter !== 'All Issues') {
+      const categoryMap = {
+        'Pothole': 'Pothole',
+        'Garbage': 'Garbage',
+        'Streetlight': ['Street light', 'Street Lights'] // Handle both variations
+      };
+
+      if (selectedCategoryFilter === 'Streetlight') {
+        filteredReports = filteredReports.filter(report => 
+          categoryMap.Streetlight.includes(report.title)
+        );
+      } else {
+        filteredReports = filteredReports.filter(report => 
+          report.title === categoryMap[selectedCategoryFilter]
+        );
+      }
+    }
+
+    // Then filter by status if a status filter is selected
+    if (selectedStatusFilter) {
+      const statusMap = {
+        'Pending': 'Pending',
+        'In Progress': 'In-Progress',
+        'Completed': 'Completed'
+      };
+      
+      filteredReports = filteredReports.filter(report => 
+        report.status === statusMap[selectedStatusFilter]
+      );
+    }
+
+    return filteredReports;
   };
 
   const { pending, inProgress, completed } = getStatusCounts();
-  const filters = ['Pending', 'In Progress', 'Completed', 'All Issues'];
+  const categoryFilters = ['Pothole', 'Garbage', 'Streetlight', 'All Issues']; // Updated to category filters
 
   return (
     <ImageBackground
@@ -138,24 +165,36 @@ const MyReportsScreen = ({ navigation }) => {
           {/* Statistics Cards */}
           <View style={styles.statsContainer}>
             <TouchableOpacity 
-              style={[styles.statCard, { backgroundColor: 'rgba(255, 87, 34, 0.8)' }]}
-              onPress={() => setSelectedFilter('Pending')}
+              style={[
+                styles.statCard, 
+                { backgroundColor: 'rgba(255, 87, 34, 0.8)' },
+                selectedStatusFilter === 'Pending' && styles.selectedStatCard
+              ]}
+              onPress={() => setSelectedStatusFilter(selectedStatusFilter === 'Pending' ? null : 'Pending')}
             >
               <Text style={styles.statNumber}>{pending}</Text>
               <Text style={styles.statLabel}>Pending</Text>
             </TouchableOpacity>
 
             <TouchableOpacity 
-              style={[styles.statCard, { backgroundColor: 'rgba(7, 152, 255, 0.8)' }]}
-              onPress={() => setSelectedFilter('In Progress')}
+              style={[
+                styles.statCard, 
+                { backgroundColor: 'rgba(7, 152, 255, 0.8)' },
+                selectedStatusFilter === 'In Progress' && styles.selectedStatCard
+              ]}
+              onPress={() => setSelectedStatusFilter(selectedStatusFilter === 'In Progress' ? null : 'In Progress')}
             >
               <Text style={styles.statNumber}>{inProgress}</Text>
               <Text style={styles.statLabel}>In Progress</Text>
             </TouchableOpacity>
 
             <TouchableOpacity 
-              style={[styles.statCard, { backgroundColor: 'rgba(76, 175, 80, 0.8)' }]}
-              onPress={() => setSelectedFilter('Completed')}
+              style={[
+                styles.statCard, 
+                { backgroundColor: 'rgba(76, 175, 80, 0.8)' },
+                selectedStatusFilter === 'Completed' && styles.selectedStatCard
+              ]}
+              onPress={() => setSelectedStatusFilter(selectedStatusFilter === 'Completed' ? null : 'Completed')}
             >
               <Text style={styles.statNumber}>{completed}</Text>
               <Text style={styles.statLabel}>Completed</Text>
@@ -164,18 +203,18 @@ const MyReportsScreen = ({ navigation }) => {
 
           {/* Filter Buttons */}
           <View style={styles.filterContainer}>
-            {filters.map((filter) => (
+            {categoryFilters.map((filter) => (
               <TouchableOpacity
                 key={filter}
                 style={[
                   styles.filterButton,
-                  selectedFilter === filter && styles.filterButtonActive
+                  selectedCategoryFilter === filter && styles.filterButtonActive
                 ]}
-                onPress={() => setSelectedFilter(filter)}
+                onPress={() => setSelectedCategoryFilter(filter)}
               >
                 <Text style={[
                   styles.filterButtonText,
-                  selectedFilter === filter && styles.filterButtonTextActive
+                  selectedCategoryFilter === filter && styles.filterButtonTextActive
                 ]}>
                   {filter}
                 </Text>
@@ -264,6 +303,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 5,
+  },
+  selectedStatCard: {
+    borderWidth: 3,
+    borderColor: '#FFFFFF',
+    shadowOpacity: 0.5,
+    shadowRadius: 12,
+    elevation: 8,
   },
   statNumber: {
     fontSize: 32,
