@@ -35,10 +35,16 @@ const ProfileScreen = ({ navigation }) => {
   };
 
   const profileOptions = [
-    { icon: 'person-outline', title: 'Edit Profile', onPress: () => {} },
-    { icon: 'notifications-outline', title: 'Notifications', onPress: () => {} },
-    { icon: 'help-circle-outline', title: 'Help & Support', onPress: () => {} },
-    { icon: 'information-circle-outline', title: 'About', onPress: () => {} },
+    { 
+      icon: 'help-circle-outline', 
+      title: 'Help & Support', 
+      onPress: () => navigation.navigate('HelpSupportScreen')
+    },
+    { 
+      icon: 'information-circle-outline', 
+      title: 'About', 
+      onPress: () => navigation.navigate('AboutScreen')
+    },
     { icon: 'log-out-outline', title: 'Logout', onPress: handleLogout },
   ];
 
@@ -61,7 +67,6 @@ const ProfileScreen = ({ navigation }) => {
                 <Ionicons name="person" size={40} color="#FF6B35" />
               </View>
               <View style={styles.userInfo}>
-                <Text style={styles.userName}>John Doe</Text>
                 <Text style={styles.userPhone}>+91 7487486769</Text>
               </View>
             </View>
@@ -126,15 +131,10 @@ const styles = StyleSheet.create({
   userInfo: {
     flex: 1,
   },
-  userName: {
-    fontSize: 20,
+  userPhone: {
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#FFFFFF',
-    marginBottom: 4,
-  },
-  userPhone: {
-    fontSize: 16,
-    color: '#B0B0B0',
   },
   optionsCard: {
     borderRadius: 16,

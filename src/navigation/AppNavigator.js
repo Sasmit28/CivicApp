@@ -14,6 +14,8 @@ import HomeScreen from '../screens/main/HomeScreen';
 import ReportScreen from '../screens/main/ReportScreen';
 import MyReportsScreen from '../screens/main/MyReportsScreen';
 import ProfileScreen from '../screens/main/ProfileScreen';
+import HelpSupportScreen from '../screens/main/HelpSupportScreen';
+import AboutScreen from '../screens/main/AboutScreen';
 
 const AuthStack = createStackNavigator();
 const MainStack = createStackNavigator();
@@ -82,6 +84,8 @@ const MainAppNavigator = () => {
   return (
     <MainStack.Navigator screenOptions={{ headerShown: false }}>
       <MainStack.Screen name="MainTabs" component={TabNavigator} />
+      <MainStack.Screen name="HelpSupportScreen" component={HelpSupportScreen} />
+      <MainStack.Screen name="AboutScreen" component={AboutScreen} />
     </MainStack.Navigator>
   );
 };
